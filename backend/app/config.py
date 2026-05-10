@@ -24,8 +24,6 @@ class Settings(BaseSettings):
         validation_alias=AliasChoices("MYSQL_DB", "MYSQL_DATABASE"),
     )
 
-    GEMINI_API_KEY: str = "AIzaSyCrG0FCaqrZQ-Q6CMFTZCtKoaq2xhFhPsc"
-
     @property
     def database_url(self) -> str:
         """SQLAlchemy için MySQL connection string. Şifredeki özel karakterler URL-encode edilir."""

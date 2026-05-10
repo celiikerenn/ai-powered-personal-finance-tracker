@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Services\FastApiService;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -43,27 +42,6 @@ class ExpenseController extends Controller
             'categories' => $categories,
             'autoFixedChecked' => $autoChecked,
         ]);
-    }
-
-    /**
-     * Fiş görselini FastAPI üzerinden analiz ettirir (JSON).
-     */
-    public function analyzeReceipt(Request $request): JsonResponse
-    {
-        $userId = $request->session()->get('user_id');
-        if (! $userId) {
-            return response()->json(['message' => 'Unauthorized.'], 401);
-        }
-
-        $request->validate([
-            'receipt' => 'required|image|max:12288',
-        ]);
-
-        /** @var \Illuminate\Http\UploadedFile $file */
-        $file = $request->file('receipt');
-        $data = $this->api->analyzeReceipt($file->getRealPath(), $file->getClientOriginalName() ?: 'receipt.jpg');
-
-        return response()->json($data);
     }
 
     public function store(Request $request): RedirectResponse

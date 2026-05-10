@@ -5,7 +5,7 @@ Laravel, oturumdaki user_id ile istek atar.
 from datetime import date
 from decimal import Decimal
 
-from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func, extract
 
@@ -17,10 +17,7 @@ from app.schemas import (
     ExpenseResponse,
     ExpenseListResponse,
     MonthlyTotalResponse,
-    ReceiptAnalyzeResponse,
-    ReceiptLineItem,
 )
-from app.services.receipt_ai import analyze_receipt_image
 
 router = APIRouter(prefix="/expenses", tags=["expenses"])
 
@@ -81,39 +78,6 @@ def create_expense(data: ExpenseCreate, db: Session = Depends(get_db)):
         elif hasattr(e, "__cause__") and e.__cause__:
             err_msg = str(e.__cause__)
         raise HTTPException(status_code=503, detail=f"Veritabanı hatası: {err_msg}") from e
-
-
-@router.post("/receipt-analyze", response_model=ReceiptAnalyzeResponse)
-async def receipt_analyze(receipt: UploadFile = File(...)):
-    """
-    Fiş fotoğrafını Gemini Vision ile analiz eder.
-    Beklenmedik durumlarda boş değerlerle döner (exception sızdırılmaz).
-    """
-    safe = ReceiptAnalyzeResponse(
-        merchant_name="",
-        date="",
-        total=0.0,
-        category="Other",
-        items=[],
-    )
-    try:
-        raw = await receipt.read()
-        mime = receipt.content_type or "image/jpeg"
-        data = analyze_receipt_image(raw, mime)
-        items = [
-            ReceiptLineItem(name=i.get("name", ""), price=float(i.get("price", 0) or 0))
-            for i in (data.get("items") or [])
-            if isinstance(i, dict)
-        ]
-        return ReceiptAnalyzeResponse(
-            merchant_name=str(data.get("merchant_name", "") or ""),
-            date=str(data.get("date", "") or ""),
-            total=float(data.get("total", 0) or 0),
-            category=str(data.get("category", "Other") or "Other"),
-            items=items,
-        )
-    except Exception:
-        return safe
 
 
 @router.get("", response_model=ExpenseListResponse)

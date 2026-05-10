@@ -8,22 +8,6 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 
-# ---------- Receipt (Gemini Vision) ----------
-class ReceiptLineItem(BaseModel):
-    """Satır kalemi (fiş)."""
-    name: str = ""
-    price: float = 0.0
-
-
-class ReceiptAnalyzeResponse(BaseModel):
-    """Fiş analizi cevabı — alanlar boş / sıfır olabilir."""
-    merchant_name: str = ""
-    date: str = ""  # YYYY-MM-DD
-    total: float = 0.0
-    category: str = "Other"
-    items: list[ReceiptLineItem] = Field(default_factory=list)
-
-
 # ---------- Auth ----------
 class UserRegister(BaseModel):
     """Kayıt isteği."""
