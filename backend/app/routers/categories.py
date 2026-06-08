@@ -13,6 +13,6 @@ router = APIRouter(prefix="/categories", tags=["categories"])
 
 @router.get("", response_model=list[CategoryResponse])
 def list_categories(db: Session = Depends(get_db)):
-    """Tüm harcama kategorilerini döner (id, name)."""
-    categories = db.query(ExpenseCategory).order_by(ExpenseCategory.id.asc()).all()
-    return [CategoryResponse(id=c.id, name=c.name) for c in categories]
+    """Tüm harcama kategorilerini döner (category_id, name)."""
+    categories = db.query(ExpenseCategory).order_by(ExpenseCategory.category_id.asc()).all()
+    return [CategoryResponse(category_id=c.category_id, name=c.name) for c in categories]

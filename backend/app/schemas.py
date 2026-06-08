@@ -25,7 +25,7 @@ class UserLogin(BaseModel):
 
 class UserResponse(BaseModel):
     """Giriş/kayıt sonrası kullanıcı bilgisi (şifre gönderilmez)."""
-    id: int
+    user_id: int
     name: str
     email: str
     role: str
@@ -58,7 +58,7 @@ class ExpenseUpdate(BaseModel):
 
 class ExpenseResponse(BaseModel):
     """Tek harcama cevabı."""
-    id: int
+    expense_id: int
     user_id: int
     category_id: int
     category_name: str
@@ -91,7 +91,7 @@ class MonthlyTotalResponse(BaseModel):
 # ---------- Categories ----------
 class CategoryResponse(BaseModel):
     """Kategori listesi (dropdown için)."""
-    id: int
+    category_id: int
     name: str
 
     class Config:

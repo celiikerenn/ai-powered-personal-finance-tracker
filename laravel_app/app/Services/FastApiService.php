@@ -151,7 +151,7 @@ class FastApiService
     /**
      * Kayıt - FastAPI'de kullanıcı oluşturulur.
      *
-     * @return array ['id', 'name', 'email', 'role']
+     * @return array ['user_id', 'name', 'email', 'role']
      */
     public function register(array $data): array
     {
@@ -172,7 +172,7 @@ class FastApiService
     /**
      * Giriş - FastAPI şifre doğrular, kullanıcı bilgisi döner.
      *
-     * @return array ['id', 'name', 'email', 'role']
+     * @return array ['user_id', 'name', 'email', 'role']
      */
     public function login(array $credentials): array
     {
@@ -211,7 +211,7 @@ class FastApiService
     /**
      * Kategori listesi (dropdown için).
      *
-     * @return array [['id' => 1, 'name' => 'Food'], ...]
+     * @return array [['category_id' => 1, 'name' => 'Food'], ...]
      */
     public function listCategories(): array
     {
@@ -226,7 +226,7 @@ class FastApiService
             return [];
         }
 
-        usort($categories, static fn (array $a, array $b): int => ((int) ($a['id'] ?? 0)) <=> ((int) ($b['id'] ?? 0)));
+        usort($categories, static fn (array $a, array $b): int => ((int) ($a['category_id'] ?? 0)) <=> ((int) ($b['category_id'] ?? 0)));
 
         return $categories;
     }

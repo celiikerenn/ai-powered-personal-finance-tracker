@@ -31,7 +31,7 @@ router = APIRouter(prefix="/expenses", tags=["expenses"])
 def expense_to_response(exp: Expense) -> ExpenseResponse:
     """ORM Expense -> API response."""
     return ExpenseResponse(
-        id=exp.id,
+        expense_id=exp.expense_id,
         user_id=exp.user_id,
         category_id=exp.category_id,
         category_name=exp.category.name if exp.category else "",
@@ -54,11 +54,11 @@ def create_expense(data: ExpenseCreate, db: Session = Depends(get_db)):
         if data.expense_date > date.today():
             raise HTTPException(status_code=400, detail="Expense date cannot be in the future.")
 
-        category = db.query(ExpenseCategory).filter(ExpenseCategory.id == data.category_id).first()
+        category = db.query(ExpenseCategory).filter(ExpenseCategory.category_id == data.category_id).first()
         if not category:
             raise HTTPException(status_code=400, detail="Invalid category id.")
 
-        user = db.query(User).filter(User.id == data.user_id).first()
+        user = db.query(User).filter(User.user_id == data.user_id).first()
         if not user:
             raise HTTPException(status_code=400, detail="Invalid user id. Please login/register again.")
 
@@ -120,7 +120,7 @@ def check_anomalies(
     if user_id < 1:
         raise HTTPException(status_code=400, detail="Invalid user id.")
 
-    user = db.query(User).filter(User.id == user_id).first()
+    user = db.query(User).filter(User.user_id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found.")
 
@@ -176,7 +176,7 @@ def get_monthly_total(
     result = (
         db.query(
             func.coalesce(func.sum(Expense.amount), 0).label("total_amount"),
-            func.count(Expense.id).label("expense_count"),
+            func.count(Expense.expense_id).label("expense_count"),
         )
         .filter(Expense.user_id == user_id)
         .filter(extract("year", Expense.expense_date) == year)
@@ -203,7 +203,7 @@ def get_expense(
     exp = (
         db.query(Expense)
         .options(joinedload(Expense.category))
-        .filter(Expense.id == expense_id, Expense.user_id == user_id)
+        .filter(Expense.expense_id == expense_id, Expense.user_id == user_id)
         .first()
     )
     if not exp:
@@ -219,12 +219,12 @@ def update_expense(
     db: Session = Depends(get_db),
 ):
     """Harcama günceller (kullanıcıya ait olmalı)."""
-    exp = db.query(Expense).filter(Expense.id == expense_id, Expense.user_id == user_id).first()
+    exp = db.query(Expense).filter(Expense.expense_id == expense_id, Expense.user_id == user_id).first()
     if not exp:
         raise HTTPException(status_code=404, detail="Expense not found.")
 
     if data.category_id is not None:
-        category = db.query(ExpenseCategory).filter(ExpenseCategory.id == data.category_id).first()
+        category = db.query(ExpenseCategory).filter(ExpenseCategory.category_id == data.category_id).first()
         if not category:
             raise HTTPException(status_code=400, detail="Invalid category id.")
         exp.category_id = data.category_id
@@ -247,7 +247,7 @@ def update_expense(
     exp = (
         db.query(Expense)
         .options(joinedload(Expense.category))
-        .filter(Expense.id == expense_id, Expense.user_id == user_id)
+        .filter(Expense.expense_id == expense_id, Expense.user_id == user_id)
         .first()
     )
     return expense_to_response(exp)
@@ -260,9 +260,9 @@ def delete_expense(
     db: Session = Depends(get_db),
 ):
     """Harcama siler (kullanıcıya ait olmalı)."""
-    exp = db.query(Expense).filter(Expense.id == expense_id, Expense.user_id == user_id).first()
+    exp = db.query(Expense).filter(Expense.expense_id == expense_id, Expense.user_id == user_id).first()
     if not exp:
         raise HTTPException(status_code=404, detail="Expense not found.")
     db.delete(exp)
     db.commit()
-    return {"status": "ok", "deleted_id": expense_id}
+    return {"status": "ok", "deleted_expense_id": expense_id}

@@ -143,7 +143,7 @@ class ReceiptScanController extends Controller
 
         foreach ($categories as $cat) {
             if (strcasecmp((string) ($cat['name'] ?? ''), $categoryName) === 0) {
-                return (int) $cat['id'];
+                return (int) $cat['category_id'];
             }
         }
 

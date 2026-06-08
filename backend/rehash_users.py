@@ -18,8 +18,8 @@ def main():
     updated = 0
     skipped = 0
     with engine.begin() as conn:
-        rows = conn.execute(text("SELECT id, password FROM users")).fetchall()
-        for user_id, password in rows:
+        rows = conn.execute(text("SELECT user_id, password FROM users")).fetchall()
+        for uid, password in rows:
             pwd = password or ""
             if isinstance(pwd, bytes):
                 pwd = pwd.decode("utf-8", errors="ignore")
@@ -28,8 +28,8 @@ def main():
                 continue
             new_hash = hash_password(str(pwd))
             conn.execute(
-                text("UPDATE users SET password = :p WHERE id = :id"),
-                {"p": new_hash, "id": user_id},
+                text("UPDATE users SET password = :p WHERE user_id = :user_id"),
+                {"p": new_hash, "user_id": uid},
             )
             updated += 1
 

@@ -11,7 +11,7 @@ from app.database import Base
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255), nullable=False)
     email = Column(String(255), unique=True, nullable=False)
     password = Column(String(255), nullable=False)
@@ -28,7 +28,7 @@ class User(Base):
 class ExpenseCategory(Base):
     __tablename__ = "expense_categories"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    category_id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(100), unique=True, nullable=False)
 
     expenses = relationship("Expense", back_populates="category")
@@ -39,8 +39,8 @@ class ReceiptMerchantMemory(Base):
 
     __tablename__ = "receipt_merchant_memories"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    memory_id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.user_id", ondelete="CASCADE"), nullable=False, index=True)
     keyword = Column(String(120), nullable=False)
     category_name = Column(String(100), nullable=False)
     use_count = Column(Integer, default=1, nullable=False)
@@ -51,9 +51,9 @@ class ReceiptMerchantMemory(Base):
 class Expense(Base):
     __tablename__ = "expenses"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    category_id = Column(Integer, ForeignKey("expense_categories.id", ondelete="RESTRICT"), nullable=False)
+    expense_id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.user_id", ondelete="CASCADE"), nullable=False)
+    category_id = Column(Integer, ForeignKey("expense_categories.category_id", ondelete="RESTRICT"), nullable=False)
     amount = Column(DECIMAL(12, 2), nullable=False)
     description = Column(Text, nullable=True)
     receipt_image_path = Column(String(512), nullable=True)

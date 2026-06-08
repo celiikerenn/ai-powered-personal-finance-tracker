@@ -5,7 +5,7 @@
 @section('content')
 <h1>Edit Expense</h1>
 <div class="card">
-    <form method="POST" action="{{ route('expenses.update', $expense['id']) }}">
+    <form method="POST" action="{{ route('expenses.update', $expense['expense_id']) }}">
         @csrf
         @method('PUT')
 
@@ -14,8 +14,8 @@
             <select id="category_id" name="category_id" class="select-control select-enhanced" required>
                 <option value="">Select</option>
                 @foreach($categories as $cat)
-                    <option value="{{ $cat['id'] }}"
-                        {{ old('category_id', $expense['category_id']) == $cat['id'] ? 'selected' : '' }}>
+                    <option value="{{ $cat['category_id'] }}"
+                        {{ old('category_id', $expense['category_id']) == $cat['category_id'] ? 'selected' : '' }}>
                         {{ $cat['name'] }}
                     </option>
                 @endforeach

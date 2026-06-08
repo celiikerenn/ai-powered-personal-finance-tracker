@@ -18,7 +18,7 @@
             <select id="category_id" name="category_id" class="select-control select-enhanced" required>
                 <option value="">Select</option>
                 @foreach($categories as $cat)
-                    <option value="{{ $cat['id'] }}" {{ old('category_id') == $cat['id'] ? 'selected' : '' }}>{{ $cat['name'] }}</option>
+                    <option value="{{ $cat['category_id'] }}" {{ old('category_id') == $cat['category_id'] ? 'selected' : '' }}>{{ $cat['name'] }}</option>
                 @endforeach
             </select>
             @error('category_id') <div class="text-danger">{{ $message }}</div> @enderror

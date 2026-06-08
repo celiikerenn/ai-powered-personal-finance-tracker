@@ -338,7 +338,7 @@ def learn_from_receipt(
     description: Optional[str],
     raw_text: str,
 ) -> int:
-    category = db.query(ExpenseCategory).filter(ExpenseCategory.id == category_id).first()
+    category = db.query(ExpenseCategory).filter(ExpenseCategory.category_id == category_id).first()
     if not category:
         return 0
 

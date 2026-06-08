@@ -121,8 +121,8 @@ class ExpenseController extends Controller
             $categoryIdByName = [];
             foreach ($categories as $cat) {
                 $name = strtolower(trim((string) ($cat['name'] ?? '')));
-                if ($name !== '' && isset($cat['id'])) {
-                    $categoryIdByName[$name] = (int) $cat['id'];
+                if ($name !== '' && isset($cat['category_id'])) {
+                    $categoryIdByName[$name] = (int) $cat['category_id'];
                 }
             }
 

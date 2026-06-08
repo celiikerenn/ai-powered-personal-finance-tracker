@@ -53,7 +53,7 @@ class AuthController extends Controller
             : 'TRY';
 
         session([
-            'user_id'   => $user['id'],
+            'user_id'   => $user['user_id'],
             'user_name' => $user['name'],
             'user_email'=> $user['email'],
             'user_role' => $user['role'],
@@ -102,7 +102,7 @@ class AuthController extends Controller
             : 'TRY';
 
         session([
-            'user_id'   => $user['id'],
+            'user_id'   => $user['user_id'],
             'user_name' => $user['name'],
             'user_email'=> $user['email'],
             'user_role' => $user['role'],

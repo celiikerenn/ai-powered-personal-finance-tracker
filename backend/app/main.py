@@ -68,9 +68,9 @@ def _migrate_category_names_tr_to_en(db) -> None:
         en_cat = db.query(ExpenseCategory).filter(ExpenseCategory.name == en_name).first()
         if en_cat is None:
             old_cat.name = en_name
-        elif en_cat.id != old_cat.id:
-            db.query(Expense).filter(Expense.category_id == old_cat.id).update(
-                {Expense.category_id: en_cat.id},
+        elif en_cat.category_id != old_cat.category_id:
+            db.query(Expense).filter(Expense.category_id == old_cat.category_id).update(
+                {Expense.category_id: en_cat.category_id},
                 synchronize_session=False,
             )
             db.delete(old_cat)
@@ -91,6 +91,93 @@ def _ensure_receipt_image_column() -> None:
         conn.execute(
             text("ALTER TABLE expenses ADD COLUMN receipt_image_path VARCHAR(512) NULL")
         )
+        conn.commit()
+
+
+def _migrate_pk_column_names() -> None:
+    """Rename generic id PK columns to descriptive names (users.user_id, etc.)."""
+    from sqlalchemy import inspect, text
+
+    insp = inspect(engine)
+    if "users" not in insp.get_table_names():
+        return
+
+    user_cols = {c["name"] for c in insp.get_columns("users")}
+    if "user_id" in user_cols and "id" not in user_cols:
+        return
+    if "id" not in user_cols:
+        return
+
+    def _drop_foreign_keys(conn, table: str) -> None:
+        rows = conn.execute(
+            text(
+                """
+                SELECT CONSTRAINT_NAME
+                FROM information_schema.KEY_COLUMN_USAGE
+                WHERE TABLE_SCHEMA = DATABASE()
+                  AND TABLE_NAME = :table_name
+                  AND REFERENCED_TABLE_NAME IS NOT NULL
+                """
+            ),
+            {"table_name": table},
+        ).fetchall()
+        for (constraint_name,) in rows:
+            conn.execute(text(f"ALTER TABLE `{table}` DROP FOREIGN KEY `{constraint_name}`"))
+
+    with engine.connect() as conn:
+        _drop_foreign_keys(conn, "expenses")
+        if "receipt_merchant_memories" in insp.get_table_names():
+            _drop_foreign_keys(conn, "receipt_merchant_memories")
+
+        conn.execute(
+            text("ALTER TABLE users CHANGE COLUMN id user_id INT NOT NULL AUTO_INCREMENT")
+        )
+        conn.execute(
+            text(
+                "ALTER TABLE expense_categories CHANGE COLUMN id category_id INT NOT NULL AUTO_INCREMENT"
+            )
+        )
+        conn.execute(
+            text("ALTER TABLE expenses CHANGE COLUMN id expense_id INT NOT NULL AUTO_INCREMENT")
+        )
+        if "receipt_merchant_memories" in insp.get_table_names():
+            memory_cols = {c["name"] for c in insp.get_columns("receipt_merchant_memories")}
+            if "id" in memory_cols:
+                conn.execute(
+                    text(
+                        "ALTER TABLE receipt_merchant_memories "
+                        "CHANGE COLUMN id memory_id INT NOT NULL AUTO_INCREMENT"
+                    )
+                )
+
+        conn.execute(
+            text(
+                """
+                ALTER TABLE expenses
+                ADD CONSTRAINT fk_expenses_user
+                FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+                """
+            )
+        )
+        conn.execute(
+            text(
+                """
+                ALTER TABLE expenses
+                ADD CONSTRAINT fk_expenses_category
+                FOREIGN KEY (category_id) REFERENCES expense_categories(category_id) ON DELETE RESTRICT
+                """
+            )
+        )
+        if "receipt_merchant_memories" in insp.get_table_names():
+            conn.execute(
+                text(
+                    """
+                    ALTER TABLE receipt_merchant_memories
+                    ADD CONSTRAINT fk_receipt_memory_user
+                    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+                    """
+                )
+            )
         conn.commit()
 
 
@@ -121,6 +208,7 @@ def startup_init_db():
     Alembic/migration kullanılmayan basit kurulum senaryosu için.
     """
     Base.metadata.create_all(bind=engine)
+    _migrate_pk_column_names()
     _ensure_receipt_image_column()
     _ensure_user_notification_columns()
 

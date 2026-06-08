@@ -45,8 +45,8 @@
             >
                 @foreach($categories as $cat)
                     <option
-                        value="{{ $cat['id'] }}"
-                        {{ in_array((string) $cat['id'], $selectedCategoryIds, true) ? 'selected' : '' }}
+                        value="{{ $cat['category_id'] }}"
+                        {{ in_array((string) $cat['category_id'], $selectedCategoryIds, true) ? 'selected' : '' }}
                     >{{ $cat['name'] }}</option>
                 @endforeach
             </select>

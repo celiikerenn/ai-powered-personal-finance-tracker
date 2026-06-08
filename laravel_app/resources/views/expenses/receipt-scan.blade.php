@@ -125,7 +125,7 @@
                     <select id="category_id_placeholder" class="select-control" disabled>
                         <option value="">Select</option>
                         @foreach($categories as $cat)
-                            <option value="{{ $cat['id'] }}">{{ $cat['name'] }}</option>
+                            <option value="{{ $cat['category_id'] }}">{{ $cat['name'] }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -161,7 +161,7 @@
                     <select id="category_id" name="category_id" class="select-control select-enhanced" required>
                         <option value="">Select</option>
                         @foreach($categories as $cat)
-                            <option value="{{ $cat['id'] }}" {{ (string) old('category_id', $scan['category_id'] ?? '') === (string) $cat['id'] ? 'selected' : '' }}>{{ $cat['name'] }}</option>
+                            <option value="{{ $cat['category_id'] }}" {{ (string) old('category_id', $scan['category_id'] ?? '') === (string) $cat['category_id'] ? 'selected' : '' }}>{{ $cat['name'] }}</option>
                         @endforeach
                     </select>
                     @if(!empty($scan['category_source']) && ($scan['category_source'] ?? '') === 'memory')

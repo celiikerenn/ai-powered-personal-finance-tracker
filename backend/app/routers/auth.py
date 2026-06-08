@@ -67,7 +67,7 @@ def register(data: UserRegister, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(user)
         return UserResponse(
-            id=user.id,
+            user_id=user.user_id,
             name=user.name,
             email=user.email,
             role=str(user.role),
@@ -94,7 +94,7 @@ def login(data: UserLogin, db: Session = Depends(get_db)):
     if not user or not verify_password(data.password, user.password):
         raise HTTPException(status_code=401, detail="Invalid email or password.")
     return UserResponse(
-        id=user.id,
+        user_id=user.user_id,
         name=user.name,
         email=user.email,
         role=str(user.role),
@@ -108,7 +108,7 @@ def users_with_notifications(db: Session = Depends(get_db)):
     """Users opted in to email alerts (for Laravel scheduler)."""
     rows = db.query(User).filter(User.email_notifications.is_(True)).all()
     return [
-        {"id": u.id, "email": u.email, "name": u.name}
+        {"user_id": u.user_id, "email": u.email, "name": u.name}
         for u in rows
     ]
 
@@ -119,7 +119,7 @@ def update_notification_settings(payload: dict, db: Session = Depends(get_db)):
     if user_id < 1:
         raise HTTPException(status_code=400, detail="Invalid user id.")
 
-    user = db.query(User).filter(User.id == user_id).first()
+    user = db.query(User).filter(User.user_id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found.")
 
@@ -131,7 +131,7 @@ def update_notification_settings(payload: dict, db: Session = Depends(get_db)):
     db.refresh(user)
 
     return {
-        "user_id": user.id,
+        "user_id": user.user_id,
         "email_notifications": bool(user.email_notifications),
     }
 
@@ -158,7 +158,7 @@ def update_budget(
     if monthly_budget < 0:
         raise HTTPException(status_code=400, detail="monthly_budget cannot be negative.")
 
-    user = db.query(User).filter(User.id == user_id).first()
+    user = db.query(User).filter(User.user_id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found.")
 
@@ -168,7 +168,7 @@ def update_budget(
     db.refresh(user)
 
     return {
-        "id": user.id,
+        "user_id": user.user_id,
         "name": user.name,
         "email": user.email,
         "role": str(user.role),
@@ -199,7 +199,7 @@ def change_password(
     if not current_password or not new_password:
         raise HTTPException(status_code=400, detail="Both current and new passwords are required.")
 
-    user = db.query(User).filter(User.id == user_id).first()
+    user = db.query(User).filter(User.user_id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found.")
 
@@ -211,4 +211,4 @@ def change_password(
     db.commit()
     db.refresh(user)
 
-    return UserResponse(id=user.id, name=user.name, email=user.email, role=str(user.role))
+    return UserResponse(user_id=user.user_id, name=user.name, email=user.email, role=str(user.role))

@@ -24,7 +24,7 @@ class SendAnomalyNotifications extends Command
 
         $sent = 0;
         foreach ($users as $user) {
-            $id = (int) ($user['id'] ?? 0);
+            $id = (int) ($user['user_id'] ?? 0);
             $email = (string) ($user['email'] ?? '');
             $name = (string) ($user['name'] ?? 'User');
             if ($id < 1 || $email === '') {

@@ -311,8 +311,8 @@
                     @endphp
                     <tr class="expense-row"
                         data-category="{{ strtolower($e['category_name'] ?? '') }}"
-                        data-search="{{ strtolower(($e['description'] ?? '') . ' ' . ($e['category_name'] ?? '') . ' ' . ($e['id'] ?? '') . ' ' . number_format($e['amount'], 2, ',', '.') . ' ' . number_format($e['amount'], 2, '.', '') . ' ' . \Carbon\Carbon::parse($e['expense_date'])->format('d.m.Y') . ' ' . \Carbon\Carbon::parse($e['expense_date'])->format('Y-m-d') . ' ' . \Carbon\Carbon::parse($e['created_at'])->format('d.m.Y H:i')) }}">
-                        <td class="cell-id">#{{ $e['id'] }}</td>
+                        data-search="{{ strtolower(($e['description'] ?? '') . ' ' . ($e['category_name'] ?? '') . ' ' . ($e['expense_id'] ?? '') . ' ' . number_format($e['amount'], 2, ',', '.') . ' ' . number_format($e['amount'], 2, '.', '') . ' ' . \Carbon\Carbon::parse($e['expense_date'])->format('d.m.Y') . ' ' . \Carbon\Carbon::parse($e['expense_date'])->format('Y-m-d') . ' ' . \Carbon\Carbon::parse($e['created_at'])->format('d.m.Y H:i')) }}">
+                        <td class="cell-id">#{{ $e['expense_id'] }}</td>
                         <td class="date-cell">{{ \Carbon\Carbon::parse($e['expense_date'])->format('d.m.Y') }}</td>
                         <td>
                             <span class="badge-category {{ $badgeClass }}">
@@ -326,7 +326,7 @@
                         <td class="date-cell">{{ \Carbon\Carbon::parse($e['created_at'])->format('d.m.Y H:i') }}</td>
                         <td class="expense-actions-cell">
                             <div class="expense-actions">
-                                <a class="btn btn-expense-edit" href="{{ route('expenses.edit', $e['id']) }}" title="Edit expense" aria-label="Edit expense">
+                                <a class="btn btn-expense-edit" href="{{ route('expenses.edit', $e['expense_id']) }}" title="Edit expense" aria-label="Edit expense">
                                     <span aria-hidden="true">✏</span> Edit
                                 </a>
                                 <button
@@ -336,7 +336,7 @@
                                     title="Delete expense"
                                     aria-label="Delete expense"
                                 ><span aria-hidden="true">🗑</span> Delete</button>
-                                <form method="POST" action="{{ route('expenses.destroy', $e['id']) }}" style="display:none;" class="delete-form">
+                                <form method="POST" action="{{ route('expenses.destroy', $e['expense_id']) }}" style="display:none;" class="delete-form">
                                     @csrf
                                     @method('DELETE')
                                 </form>

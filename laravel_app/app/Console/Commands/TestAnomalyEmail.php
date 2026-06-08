@@ -64,7 +64,7 @@ class TestAnomalyEmail extends Command
         if ($email === '') {
             try {
                 foreach ($api->usersWithNotifications() as $u) {
-                    if ((int) ($u['id'] ?? 0) === $userId) {
+                    if ((int) ($u['user_id'] ?? 0) === $userId) {
                         $email = (string) ($u['email'] ?? '');
                         $name = (string) ($u['name'] ?? 'User');
                         break;
