@@ -752,11 +752,11 @@ def _parse_date_groups(groups: tuple[str, ...]) -> Optional[date]:
 
 def _parse_date(lines: list[str]) -> Optional[date]:
     patterns: list[tuple[str, bool]] = [
-        (r"(?:tarih|tar\s*ih)\s*[:\s]*(\d{2})[.,/](\d{2})[.,/\s]*(\d{4})\b", True),
-        (r"(?:tarih|tar\s*ih)\s*[:\s]*(\d{2})[.,/](\d{2})[.,/](\d{2})\b", True),
-        (r"(\d{2})[.,/](\d{2})[.,/](\d{4})\b", False),
-        (r"(\d{2})[.,/](\d{2})[.,/](\d{2})\b", False),
-        (r"(\d{4})[.,/](\d{2})[.,/](\d{2})\b", False),
+        (r"(?:tarih|tar\s*ih)\s*[:\s]*(\d{2})[.,/\-](\d{2})[.,/\-\s]*(\d{4})\b", True),
+        (r"(?:tarih|tar\s*ih)\s*[:\s]*(\d{2})[.,/\-](\d{2})[.,/\-](\d{2})\b", True),
+        (r"(\d{2})[.,/\-](\d{2})[.,/\-](\d{4})\b", False),
+        (r"(\d{2})[.,/\-](\d{2})[.,/\-](\d{2})\b", False),
+        (r"(\d{4})[.,/\-](\d{2})[.,/\-](\d{2})\b", False),
     ]
 
     candidates: list[tuple[int, date]] = []
