@@ -718,6 +718,13 @@ def _normalize_receipt_date_text(text: str) -> str:
     """OCR: '25.05. 2026' → '25.05.2026' before pattern matching."""
     text = re.sub(r"(\d{2}),(\d{2})([.,/]\d{4})", r"\1.\2\3", text)
     text = re.sub(r"(\d{2}[.,/]\d{2})[.\s,]+(\d{4})\b", r"\1.\2", text)
+    # OCR: '20/05/2' → '20/05/2026' (truncated year)
+    today_y = date.today().year
+    text = re.sub(
+        r"(\d{2}[.,/\-]\d{2}[.,/\-])(\d{1})\b(?!\d)",
+        lambda m: f"{m.group(1)}{today_y}" if int(m.group(2)) == (today_y % 10) else m.group(0),
+        text
+    )
     return text
 
 
